@@ -107,6 +107,18 @@
             </div>
         </div>
 
-        <script src="https://vjs.zencdn.net/7.7.5/video.js"></script>
+        <script>
+            var player = videojs('my-video', {
+                html5: {
+                    hls: {
+                        overrideNative: true
+                    },
+                    nativeVideoTracks: false,
+                    nativeAudioTracks: false,
+                    nativeTextTracks: false
+                }
+            });
+            player.play();
+        </script>
     </body>
 </html>
