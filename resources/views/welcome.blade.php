@@ -61,7 +61,63 @@
             .m-b-md {
                 margin-bottom: 30px;
             }
+            .sk-chase {
+                width: 40px;
+                height: 40px;
+                position: relative;
+                animation: sk-chase 2.5s infinite linear both;
+            }
+
+            .sk-chase-dot {
+                width: 100%;
+                height: 100%;
+                position: absolute;
+                left: 0;
+                top: 0;
+                animation: sk-chase-dot 2.0s infinite ease-in-out both;
+            }
+
+            .sk-chase-dot:before {
+                content: '';
+                display: block;
+                width: 25%;
+                height: 25%;
+                background-color: #000;
+                border-radius: 100%;
+                animation: sk-chase-dot-before 2.0s infinite ease-in-out both;
+            }
+
+            .sk-chase-dot:nth-child(1) { animation-delay: -1.1s; }
+            .sk-chase-dot:nth-child(2) { animation-delay: -1.0s; }
+            .sk-chase-dot:nth-child(3) { animation-delay: -0.9s; }
+            .sk-chase-dot:nth-child(4) { animation-delay: -0.8s; }
+            .sk-chase-dot:nth-child(5) { animation-delay: -0.7s; }
+            .sk-chase-dot:nth-child(6) { animation-delay: -0.6s; }
+            .sk-chase-dot:nth-child(1):before { animation-delay: -1.1s; }
+            .sk-chase-dot:nth-child(2):before { animation-delay: -1.0s; }
+            .sk-chase-dot:nth-child(3):before { animation-delay: -0.9s; }
+            .sk-chase-dot:nth-child(4):before { animation-delay: -0.8s; }
+            .sk-chase-dot:nth-child(5):before { animation-delay: -0.7s; }
+            .sk-chase-dot:nth-child(6):before { animation-delay: -0.6s; }
+
+            @keyframes sk-chase {
+                100% { transform: rotate(360deg); }
+            }
+
+            @keyframes sk-chase-dot {
+                80%, 100% { transform: rotate(360deg); }
+            }
+
+            @keyframes sk-chase-dot-before {
+                50% {
+                    transform: scale(0.4);
+                } 100%, 0% {
+                      transform: scale(1.0);
+                  }
+            }
         </style>
+        <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     </head>
     <body>
         <div class="flex-center position-ref full-height">
@@ -79,22 +135,50 @@
                 </div>
             @endif
 
-            <div class="content">
-                <div class="title m-b-md">
-                    Laravel
+            <div class="content" x-data="test()">
+                <input type='text' x-model='foo' id="name"/>
+                <input  x-on:change="uploadFile('/upload', $event.target)" type="file" accept="video/*" capture="user" id="recorder">
+                <div x-show="is_loading == true" class="sk-chase">
+                    <div class="sk-chase-dot"></div>
+                    <div class="sk-chase-dot"></div>
+                    <div class="sk-chase-dot"></div>
+                    <div class="sk-chase-dot"></div>
+                    <div class="sk-chase-dot"></div>
+                    <div class="sk-chase-dot"></div>
                 </div>
-
-                <div class="links">
-                    <a href="https://laravel.com/docs">Docs</a>
-                    <a href="https://laracasts.com">Laracasts</a>
-                    <a href="https://laravel-news.com">News</a>
-                    <a href="https://blog.laravel.com">Blog</a>
-                    <a href="https://nova.laravel.com">Nova</a>
-                    <a href="https://forge.laravel.com">Forge</a>
-                    <a href="https://vapor.laravel.com">Vapor</a>
-                    <a href="https://github.com/laravel/laravel">GitHub</a>
-                </div>
+                <a x-bind:href="button_url" x-show="button_url !== null">Go to your video</a>
             </div>
         </div>
+        <script>
+            function test() {
+                return {
+                    foo: 'singlewordslug',
+                    button_url: null,
+                    is_loading: false,
+                    messageDisplay: '',
+                    uploadFile(a, b) {
+                        var data = new FormData();
+                        data.append('file', b.files[0]);
+                        data.append('name', this.foo);
+                        var config = {
+                            onUploadProgress: function (progressEvent) {
+                                var percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                            }
+                        };
+                        this.is_loading = true;
+                        let self = this;
+                        axios.post('/api/upload', data, config)
+                            .then(function (res) {
+                                self.is_loading = null;
+                                self.button_url = res.data.url;
+                            })
+                            .catch(function (err) {
+//                        output.className = 'container text-danger';
+//                        output.innerHTML = err.message;
+                            });
+                    }
+                }
+            }
+        </script>
     </body>
 </html>

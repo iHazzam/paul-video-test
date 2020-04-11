@@ -16,3 +16,17 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('{name}',function($name){
+    $vid = \App\Video::where('word',$name)->first();
+//    dd($vid);
+    if($vid == null)
+    {
+        return redirect()->back();
+    }
+    else{
+        $url = $vid->playback_url;
+//        dd($url);
+        return view('test',compact('url'));
+    }
+});
