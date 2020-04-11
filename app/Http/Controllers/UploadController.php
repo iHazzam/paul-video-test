@@ -18,8 +18,8 @@ class UploadController extends Controller
 {
     public function upload(Request $request)
     {
-        $path = Storage::disk('s3')->put('/uploads', $request->file);
-        $url = $path;
+        $path = Storage::disk('s3')->put('temp', $request->file,'public');
+        $url = 'https://miracle-staging.s3.eu-west-2.amazonaws.com/'.$path;
         // Authentication Setup
         $config = Configuration::getDefaultConfiguration()
             ->setUsername(env('MUX_TOKEN_ID'))
