@@ -18,8 +18,8 @@ class UploadController extends Controller
 {
     public function upload(Request $request)
     {
-        $path = $request->file('file')->store('public/videos');
-        $url = str_replace('public/',env('APP_URL').'/',$path);
+        $path = Storage::disk('s3')->put('/uploads', $request->file);
+        $url = $path;
         // Authentication Setup
         $config = Configuration::getDefaultConfiguration()
             ->setUsername(env('MUX_TOKEN_ID'))
